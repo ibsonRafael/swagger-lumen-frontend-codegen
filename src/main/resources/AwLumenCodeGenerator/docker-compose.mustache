@@ -1,0 +1,126 @@
+version: '2'
+
+services:
+  ### Beanstalkd Container ####################################
+  beanstalkd:
+    image: jonbaldie/beanstalkd
+    container_name: beanstalkd.application.dev
+    ports:
+      - "11300:11300"
+    networks:
+      - backend
+
+  ### Redis Container #########################################
+  redis:
+    image: redis:alpine
+    container_name: redis.application.dev
+    volumes:
+      - ./containers/redis-data:/data
+    networks:
+      - backend
+
+
+  ### MySQL Container #########################################
+  mysql:
+    image: mysql:latest
+    container_name: mysql.application.dev
+    volumes:
+      - ./containers/mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_USER: root
+      MYSQL_DATABASE: core
+    networks:
+      - backend
+
+  ### MongoDB Container #######################################
+  mongo:
+    image: mongo:latest
+    container_name: mongo.application.dev
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./containers/mongo-data:/data/db
+    networks:
+      - backend
+
+
+  # The Application
+  php_command:
+    container_name: command.application.dev
+    build:
+      context: ./containers/build/php7
+      dockerfile: Dockerfile
+    ports:
+      - "81:80"
+      - "4431:443"
+    volumes:
+      - ./backend/command:/var/www/html
+      - ./containers/logs/command:/var/log/apache2
+    networks:
+      - frontend
+      - backend
+
+  php_query:
+    container_name: query.application.dev
+    build:
+      context: ./containers/build/php7
+      dockerfile: Dockerfile
+    ports:
+      - "82:80"
+      - "4432:443"
+    volumes:
+      - ./backend/query:/var/www/html
+      - ./containers/logs/query:/var/log/apache2
+    networks:
+      - frontend
+      - backend
+
+  php_frontend:
+    container_name: app.application.dev
+    build:
+      context: ./containers/build/php7
+      dockerfile: Dockerfile
+    ports:
+      - "83:80"
+      - "4433:443"
+    volumes:
+      - ./backend:/var/www/html
+      - ./containers/logs/frontend:/var/log/apache2
+    networks:
+      - frontend
+      - backend
+
+
+  ### Jenkins ###################################################
+  jenkins:
+    container_name: jenkins.application.dev
+    image: jenkins/jenkins:lts
+    #build:
+    # context: ./containers/build/jenkins
+    # dockerfile: Dockerfile
+    ports:
+      - "58080:8080"
+      - "50000:50000"
+    privileged: true
+    volumes:
+      - ./jenkins:/var/jenkins_home
+    networks:
+      - frontend
+      - backend
+
+
+### Networks Setup ############################################
+networks:
+  frontend:
+    driver: "bridge"
+  backend:
+    driver: "bridge"
+
+volumes:
+  redis-data:
+    driver: "local"
+  mysql-data:
+    driver: "local"
+  mongo-data:
+    driver: "local"

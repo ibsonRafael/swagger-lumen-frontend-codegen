@@ -1,0 +1,11 @@
+FROM php:7.1-apache
+
+# PHP extensions
+RUN \
+    docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd \
+    && docker-php-ext-configure mysqli --with-mysqli=mysqlnd \
+    && docker-php-ext-install pdo_mysql
+
+# Apache configuration for mod-rewrite
+RUN a2enmod rewrite
+RUN service apache2 restart

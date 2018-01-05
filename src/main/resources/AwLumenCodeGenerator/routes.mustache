@@ -1,0 +1,36 @@
+<?php
+/*
+{{>licenseInfo}}
+*/
+
+{{#apiInfo}}/**
+ * {{appName}}
+ * @version {{appVersion}}
+ */
+
+$app->get('/', function () use ($app) {
+    return $app->version();
+});
+
+{{#apis}}
+{{#operations}}
+{{#operation}}
+/**
+ * {{httpMethod}} {{operationId}}
+ * Summary: {{summary}}
+ * Notes: {{notes}}
+{{#hasProduces}} * Output-Formats: [{{#produces}}{{{mediaType}}}{{#hasMore}}, {{/hasMore}}{{/produces}}]{{/hasProduces}}
+ */
+{{#isRestfulCreate}}
+$app->{{httpMethod}}('{{{basePathWithoutHost}}}{{{path}}}', '{{classname}}@{{operationId}}');
+{{/isRestfulCreate}}
+{{#isRestfulUpdate}}
+$app->{{httpMethod}}('{{{basePathWithoutHost}}}{{{path}}}', '{{classname}}@{{operationId}}');
+{{/isRestfulUpdate}}
+{{#isRestfulDestroy}}
+$app->{{httpMethod}}('{{{basePathWithoutHost}}}{{{path}}}', '{{classname}}@{{operationId}}');
+{{/isRestfulDestroy}}
+{{/operation}}
+{{/operations}}
+{{/apis}}
+{{/apiInfo}}

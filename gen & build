@@ -1,0 +1,6 @@
+swagger-codegen meta -o output/myLumen -n myServerLumenCodegen -p br.com.allwissend.codegen
+java -cp /Users/daiana/Projects/swagger-lumen-codegen/target/myServerLumenCodegen-swagger-codegen-1.0.0.jar:/Users/daiana/Tools/swagger-codegen-cli-2.2.1.jar io.swagger.codegen.SwaggerCodegen
+
+java -cp /Users/daiana/Projects/swagger-lumen-codegen/target/myServerLumenCodegen-swagger-codegen-1.0.0.jar:/Users/daiana/Tools/swagger-codegen-cli-2.2.1.jar io.swagger.codegen.SwaggerCodegen generate -l aw-lumen -i http://petstore.swagger.io/v2/swagger.json -o myClient
+
+java -cp output/myLibrary/target/myClientCodegen-swagger-codegen-1.0.0.jar:modules/swagger-codegen-cli/target/swagger-codegen-cli.jar io.swagger.codegen.SwaggerCodegen
